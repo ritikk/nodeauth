@@ -88,6 +88,9 @@ passport.use('local-signup', new LocalStrategy(
                 console.log("Registered as: " + user.username);
                 request.session.success = "You are successfully registered and logged in " + user.username + "!";
                 done(null, user);
+            } else {
+                request.session.error = "Username in use";
+                done(null, user);
             }
         })
         .fail(function(err) {

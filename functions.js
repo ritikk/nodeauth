@@ -11,7 +11,7 @@ module.exports = function(db) {
             var user = {
                 "username": username,
                 "password": hash,
-                "avatar": "http://placepuppy.it/images/homepage/Beagle_puppy_6_weeks.JPG"
+                "avatar": 'http://api.adorable.io/avatars/96/' + username + '%40adorable.io'
             };
 
             console.log(db_url);
@@ -32,7 +32,7 @@ module.exports = function(db) {
 
                 client.query(query, function(err, result) {
                     //username not assigned
-                    if(err) {
+                    if(err || result.rows.length === 0) {
                         console.log(err);
                         console.log(username + " is free to use.");
 
