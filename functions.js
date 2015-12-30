@@ -56,6 +56,45 @@ module.exports = function(db) {
             });
 
             return deferred.promise;
+        },
+
+        localAuthentication: function (username, password) {
+            var deferred = Q.defer();
+
+            pg.connect(db_url, function(err, client, done) {
+                //handle connection errors
+                if (err) {
+                    done();
+                    console.log(err);
+                    deferred.reject(new Error(err));
+                }
+
+                //check if username is already assigned
+                var query = {
+                    text: 'SELECT * FROM users WHERE username=$1',
+                    values: [username]
+                };
+
+                client.query(query, function(err, result) {
+                    done();
+                    //username not found
+                    if(err || result.rows.length === 0) {
+                        console.log(err);
+                        deferred.resolve(false);
+                    } else {
+                        console.log("username found");
+                        var hash = result.rows[0].password;
+                        if (bcrypt.compareSync(password, hash)) {
+                            deferred.resolve(result.rows[0]);
+                        } else {
+                            deferred.resolve(false);
+                        }
+                    }
+                });
+
+            });
+
+            return deferred.promise;
         }
     };
 

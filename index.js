@@ -99,6 +99,28 @@ passport.use('local-signup', new LocalStrategy(
     }
 ));
 
+passport.use('local-signin', new LocalStrategy(
+  {passReqToCallback : true}, //allows us to pass back the request to the callback
+  function(req, username, password, done) {
+    func.localAuthentication(username, password)
+    .then(function (user) {
+      if (user) {
+        console.log("LOGGED IN AS: " + user.username);
+        req.session.success = 'You are successfully logged in ' + user.username + '!';
+        done(null, user);
+      }
+      if (!user) {
+        console.log("COULD NOT LOG IN");
+        req.session.error = 'Username or Password does not match.'; //inform user could not log them in
+        done(null, user);
+      }
+    })
+    .fail(function (err){
+      console.log(err.body);
+    });
+  }
+));
+
 passport.serializeUser(function (user, done) {
     console.log("serializing " + user.username);
     done(null, user);
